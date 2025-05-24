@@ -37,7 +37,10 @@ public class PabloReporteController {
     @GetMapping("/{id}")
     public ResponseEntity<Reporte> obtenerReportePorId(@PathVariable Long id) {
         Reporte reporte = reporteService.obtenerReportePorId(id);
-        return reporte != null ? ResponseEntity.ok(reporte) : ResponseEntity.notFound().build();
+        if (reporte == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(reporte);
     }
 
     /*

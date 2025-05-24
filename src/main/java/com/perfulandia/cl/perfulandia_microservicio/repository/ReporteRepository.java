@@ -10,5 +10,15 @@ import java.util.List;
 @Repository
 public interface ReporteRepository extends JpaRepository<Reporte, Long> {
 
+    /**
+     * Obtiene todos los reportes ordenados por fecha de generación.
+     */
+    @Query("SELECT r FROM Reporte r ORDER BY r.fechaReporte DESC")
+    List<Reporte> obtenerReportesOrdenadosPorFecha();
 
+    /**
+     * Obtiene reportes generados después de una fecha específica.
+     */
+    @Query("SELECT r FROM Reporte r WHERE r.fechaReporte > :fecha")
+    List<Reporte> obtenerReportesDesdeFecha(java.util.Date fecha);
 }
