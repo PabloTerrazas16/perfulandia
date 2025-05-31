@@ -13,8 +13,6 @@ public class PedidoService {
     @Autowired
     private PedidoRepository pedidoRepository;
 
-    @Autowired
-    private PedidoService pedidoService;
 
     public List<Pedido> listarPedidos() {
         return pedidoRepository.findAll();

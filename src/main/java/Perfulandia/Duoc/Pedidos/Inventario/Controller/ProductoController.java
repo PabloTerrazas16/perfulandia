@@ -70,7 +70,7 @@ public class ProductoController {
         return ResponseEntity.ok("Producto eliminado correctamente");
     }
 
-    /*FALTA EDITAR PRODUCTO*/
+
 
 
 
