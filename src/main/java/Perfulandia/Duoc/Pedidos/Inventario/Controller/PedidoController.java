@@ -2,10 +2,13 @@ package Perfulandia.Duoc.Pedidos.Inventario.Controller;
 
 import Perfulandia.Duoc.Pedidos.Inventario.Model.Pedido;
 import Perfulandia.Duoc.Pedidos.Inventario.Repository.PedidoRepository;
+import Perfulandia.Duoc.Pedidos.Inventario.Service.PedidoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/pedido")
@@ -13,6 +16,9 @@ public class PedidoController {
 
     @Autowired
     private PedidoRepository pedidoRepository;
+
+    @Autowired
+    private PedidoService pedidoService;
 
 
     @PostMapping
@@ -29,6 +35,18 @@ public class PedidoController {
                 .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)); // 404 Not Found
     }
 
+    @GetMapping
+    public ResponseEntity<List<Pedido>> listarPedidos() {
+        List<Pedido> pedidos = pedidoService.listarPedidos(); // Llama al servicio para obtener la lista de pedidos
+        return ResponseEntity.ok(pedidos); // Devuelve la lista de pedidos con un estado 200 OK
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Pedido> editarPedido(@PathVariable Long id, @RequestBody Pedido pedidoActualizado) {
+        Pedido pedidoEditado = pedidoService.editarPedido(id, pedidoActualizado);
+        return ResponseEntity.ok(pedidoEditado);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<String> eliminarPedido(@PathVariable Long id) {
         if (pedidoRepository.existsById(id)) {
@@ -40,12 +58,11 @@ public class PedidoController {
         }
     }
 
-    /*EDITAR PEDIDO FALTA*/
 
 
 
 
-    /*FALTA LISTAR PEDIDOS*/
+
 
 
 

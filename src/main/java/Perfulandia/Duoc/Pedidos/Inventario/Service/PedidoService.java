@@ -13,6 +13,9 @@ public class PedidoService {
     @Autowired
     private PedidoRepository pedidoRepository;
 
+    @Autowired
+    private PedidoService pedidoService;
+
     public List<Pedido> listarPedidos() {
         return pedidoRepository.findAll();
     }
@@ -30,12 +33,23 @@ public class PedidoService {
                 .orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
     }
 
+
+
     public void eliminarPedido(Long id) {
         if (pedidoRepository.existsById(id)) {
             pedidoRepository.deleteById(id);
         } else {
             throw new RuntimeException("Pedido no encontrado con ID: " + id);
         }
+    }
+
+    public Pedido editarPedido(Long id, Pedido pedidoActualizado) {
+        Pedido pedidoExistente = pedidoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Pedido no encontrado con ID: " + id));
+        pedidoExistente.setCliente(pedidoActualizado.getCliente());
+        pedidoExistente.setFecha(pedidoActualizado.getFecha());
+        pedidoExistente.setProductos(pedidoActualizado.getProductos());
+        return pedidoRepository.save(pedidoExistente);
     }
 
 
