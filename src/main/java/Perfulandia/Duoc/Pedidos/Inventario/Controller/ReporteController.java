@@ -1,8 +1,8 @@
 package Perfulandia.Duoc.Pedidos.Inventario.Controller;
 
-import Perfulandia.Duoc.Pedidos.Inventario.Model.Producto;
-import Perfulandia.Duoc.Pedidos.Inventario.Repository.PedidoRepository;
-import Perfulandia.Duoc.Pedidos.Inventario.Repository.ProductoRepository;
+import Perfulandia.Duoc.Pedidos.Inventario.Model.Reporte;
+import Perfulandia.Duoc.Pedidos.Inventario.Service.ReporteService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,41 +11,54 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/reportes")
+@RequestMapping("/api/reportes")
 public class ReporteController {
 
     @Autowired
-    private PedidoRepository pedidoRepository;
+    private ReporteService reporteService;
 
-    @Autowired
-    private ProductoRepository productoRepository;
-
-    @GetMapping("/totalUsuarios")
-    public ResponseEntity<Long> contarUsuarios() {
-        // Implementa la lógica para contar usuarios si tienes un repositorio de usuarios
-        // Por ejemplo: return ResponseEntity.ok(usuarioRepository.count());
-        return ResponseEntity.ok(0L); // Placeholder
-    }
-
-    @GetMapping("/totalPedidos")
-    public ResponseEntity<Long> contarPedidos() {
-        long totalPedidos = pedidoRepository.count();
-        return ResponseEntity.ok(totalPedidos);
-    }
-
-    @GetMapping("/totalProductos")
-    public ResponseEntity<Long> contarProductos() {
-        long totalProductos = productoRepository.count();
-        return ResponseEntity.ok(totalProductos);
-    }
-
-    @GetMapping("/ultimoProducto")
-    public ResponseEntity<Producto> obtenerUltimoProducto() {
-        List<Producto> productos = productoRepository.findAll();
-        if (productos.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    @GetMapping
+    public ResponseEntity<List<Reporte>> listarReportes() {
+        List<Reporte> reportes = reporteService.listarReportes();
+        if (reportes.isEmpty()) {
+            return ResponseEntity.noContent().build();
         }
-        Producto ultimoProducto = productos.get(productos.size() - 1); // Asumiendo que la lista está ordenada
-        return ResponseEntity.ok(ultimoProducto);
+        return ResponseEntity.ok(reportes);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> obtenerReportePorId(@PathVariable Long id) {
+        Reporte reporte = reporteService.obtenerReportePorId(id);
+        if (reporte == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("No se encontró reporte con ID " + id);
+        }
+        return ResponseEntity.ok(reporte);
+    }
+
+    @PostMapping
+    public ResponseEntity<Reporte> crearReporte(@RequestBody Reporte reporte) {
+        Reporte nuevoReporte = reporteService.guardarReporte(reporte);
+        return ResponseEntity.status(HttpStatus.CREATED).body(nuevoReporte);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> actualizarReporte(@PathVariable Long id, @RequestBody Reporte reporteActualizado) {
+        try {
+            Reporte reporte = reporteService.actualizarReporte(id, reporteActualizado.getNombreReporte(), reporteActualizado.getDescripcionReporte());
+            return ResponseEntity.ok(reporte);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> eliminarReporte(@PathVariable Long id) {
+        try {
+            reporteService.eliminarReporte(id);
+            return ResponseEntity.noContent().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 }
