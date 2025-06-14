@@ -1,10 +1,8 @@
 package Perfulandia.Duoc.Pedidos.Inventario.Controller;
 
 import Perfulandia.Duoc.Pedidos.Inventario.Model.Pedido;
-import Perfulandia.Duoc.Pedidos.Inventario.Repository.PedidoRepository;
 import Perfulandia.Duoc.Pedidos.Inventario.Service.PedidoService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,57 +13,34 @@ import java.util.List;
 public class PedidoController {
 
     @Autowired
-    private PedidoRepository pedidoRepository;
-
-    @Autowired
     private PedidoService pedidoService;
 
-
-    @PostMapping
-    public ResponseEntity<Pedido> crearPedido(@RequestBody Pedido pedido) {
-        Pedido nuevoPedido = pedidoRepository.save(pedido);
-        return ResponseEntity.status(HttpStatus.CREATED).body(nuevoPedido); // 201 Created
+    @GetMapping
+    public List<Pedido> getAllPedidos() {
+        return pedidoService.listarPedidos();
     }
-
 
     @GetMapping("/{id}")
-    public ResponseEntity<Pedido> obtenerPedido(@PathVariable Long id) {
-        return pedidoRepository.findById(id)
-                .map(pedido -> ResponseEntity.ok(pedido)) // 200 OK
-                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)); // 404 Not Found
+    public ResponseEntity<Pedido> getPedidoById(@PathVariable Long id) {
+        Pedido pedido = pedidoService.obtenerPedido(id);
+        return ResponseEntity.ok(pedido);
     }
 
-    @GetMapping
-    public ResponseEntity<List<Pedido>> listarPedidos() {
-        List<Pedido> pedidos = pedidoService.listarPedidos(); // Llama al servicio para obtener la lista de pedidos
-        return ResponseEntity.ok(pedidos); // Devuelve la lista de pedidos con un estado 200 OK
+    @PostMapping
+    public ResponseEntity<Pedido> createPedido(@RequestBody Pedido pedido) {
+        Pedido createdPedido = pedidoService.crearPedido(pedido);
+        return ResponseEntity.status(201).body(createdPedido);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Pedido> editarPedido(@PathVariable Long id, @RequestBody Pedido pedidoActualizado) {
-        Pedido pedidoEditado = pedidoService.editarPedido(id, pedidoActualizado);
-        return ResponseEntity.ok(pedidoEditado);
+    public ResponseEntity<Pedido> updatePedido(@PathVariable Long id, @RequestBody Pedido pedido) {
+        Pedido updatedPedido = pedidoService.editarPedido(id, pedido);
+        return ResponseEntity.ok(updatedPedido);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> eliminarPedido(@PathVariable Long id) {
-        if (pedidoRepository.existsById(id)) {
-            pedidoRepository.deleteById(id);
-            return ResponseEntity.ok("Pedido eliminado correctamente");
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Pedido no encontrado con ID: " + id);
-        }
+    public ResponseEntity<Void> deletePedido(@PathVariable Long id) {
+        pedidoService.eliminarPedido(id);
+        return ResponseEntity.ok().build();
     }
-
-
-
-
-
-
-
-
-
-
-
 }

@@ -1,14 +1,14 @@
 package Perfulandia.Duoc.Pedidos.Inventario.Service;
 
-import Perfulandia.Duoc.Pedidos.Inventario.Model.Pedido;
 import Perfulandia.Duoc.Pedidos.Inventario.Model.Producto;
 import Perfulandia.Duoc.Pedidos.Inventario.Repository.ProductoRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-@Service
 
+@Service
 public class ProductoService {
 
     @Autowired
@@ -17,31 +17,33 @@ public class ProductoService {
     public List<Producto> listarProductos() {
         return productoRepository.findAll();
     }
-    public long contarProductos() {
-        return productoRepository.count();
-    }
-
-    public Producto actualizarStock(Long id, Integer cantidad) {
-        Producto producto = productoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
-
-        producto.setStock(producto.getStock() + cantidad);
-        return productoRepository.save(producto);
-    }
-    public void eliminarProducto(Long id) {
-        if (productoRepository.existsById(id)) {
-            productoRepository.deleteById(id);
-        } else {
-            throw new RuntimeException("Producto no encontrado con ID: " + id);
-        }
-    }
-
 
     public List<Producto> buscarProductoPorNombre(String nombre) {
-
         return productoRepository.findByNombre(nombre);
     }
 
+    public Producto crearProducto(Producto producto) {
+        // Validaciones específicas pueden ir aquí si no se manejan en controlador
+        return productoRepository.save(producto);
+    }
 
+    public Producto actualizarProducto(Long id, Producto productoActualizado) {
+        Producto productoExistente = productoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado con id: " + id));
+
+        productoExistente.setNombre(productoActualizado.getNombre());
+        productoExistente.setStock(productoActualizado.getStock());
+        productoExistente.setPrecio(productoActualizado.getPrecio());
+
+        return productoRepository.save(productoExistente);
+    }
+
+    public void eliminarProducto(Long id) {
+        if (!productoRepository.existsById(id)) {
+            throw new RuntimeException("Producto no encontrado con id: " + id);
+        }
+        productoRepository.deleteById(id);
+    }
 
 }
+

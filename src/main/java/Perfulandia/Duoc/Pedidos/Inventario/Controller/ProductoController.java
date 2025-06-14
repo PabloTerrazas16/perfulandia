@@ -1,81 +1,67 @@
 package Perfulandia.Duoc.Pedidos.Inventario.Controller;
 
-import Perfulandia.Duoc.Pedidos.Inventario.Model.Pedido;
 import Perfulandia.Duoc.Pedidos.Inventario.Model.Producto;
-import Perfulandia.Duoc.Pedidos.Inventario.Repository.ProductoRepository;
 import Perfulandia.Duoc.Pedidos.Inventario.Service.ProductoService;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-@RestController
-@RequestMapping("/api/Productos")
-public class ProductoController {
 
-    @Autowired
-    private ProductoRepository productoRepository;
+@RestController
+@RequestMapping("/api/productos")
+public class ProductoController {
 
     @Autowired
     private ProductoService productoService;
 
-    @PostMapping
-    public ResponseEntity<Producto> crearProducto(@RequestBody Producto producto) {
-        // Validamos que el producto tenga nombre y stock
-        if (producto.getNombre() == null || producto.getStock() == null) {
-            return ResponseEntity.badRequest().build(); // 400 Bad Request
+    @GetMapping
+    public ResponseEntity<List<Producto>> listarProductos() {
+        List<Producto> productos = productoService.listarProductos();
+        if (productos.isEmpty()) {
+            return ResponseEntity.noContent().build();
         }
-        Producto nuevoProducto = productoRepository.save(producto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(nuevoProducto); // 201 Created
+        return ResponseEntity.ok(productos);
     }
-    //obtener lista de los productos
-   @GetMapping
-    public List<Producto> ListarProductos() {
-       return productoRepository.findAll();
-   }
 
-   //Buscar un producto por nombre
-   @GetMapping("/buscar/{nombre}")
-   public ResponseEntity<List<Producto>> buscarProducto(@PathVariable String nombre) {
-       List<Producto> productos = productoRepository.findByNombre(nombre);
-       if (productos.isEmpty()) {
-           return ResponseEntity.noContent().build(); // 204 No Content si no hay resultados
-       }
-       return ResponseEntity.ok(productos);
-   }
+    @GetMapping("/buscar")
+    public ResponseEntity<List<Producto>> buscarPorNombre(@RequestParam String nombre) {
+        List<Producto> productos = productoService.buscarProductoPorNombre(nombre);
+        if (productos.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(productos);
+    }
 
+    @PostMapping
+    public ResponseEntity<?> crearProducto(@RequestBody Producto producto) {
+        if (producto.getNombre() == null || producto.getNombre().trim().isEmpty()
+                || producto.getStock() == null || producto.getStock() < 0
+                || producto.getPrecio() == null || producto.getPrecio() < 0) {
+            return ResponseEntity.badRequest().body("Datos de producto inválidos");
+        }
+        Producto nuevoProducto = productoService.crearProducto(producto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(nuevoProducto);
+    }
 
-
-    //Actualizar  productos
     @PutMapping("/{id}")
-    public ResponseEntity<Producto> actualizarProducto(@PathVariable Long id, @RequestBody Producto productoActualizado) {
-        Producto producto = productoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("No existe el producto con id " + id));
-
-        producto.setNombre(productoActualizado.getNombre());
-        producto.setStock(productoActualizado.getStock());
-        producto.setPrecio(productoActualizado.getPrecio());
-
-        Producto productoGuardado = productoRepository.save(producto);
-        return ResponseEntity.ok(productoGuardado);
+    public ResponseEntity<?> actualizarProducto(@PathVariable Long id, @RequestBody Producto productoActualizado) {
+        try {
+            Producto producto = productoService.actualizarProducto(id, productoActualizado);
+            return ResponseEntity.ok(producto);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
-
-
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> eliminarProducto(@PathVariable Long id) {
-        productoService.eliminarProducto(id);
-        return ResponseEntity.ok("Producto eliminado correctamente");
+    public ResponseEntity<?> eliminarProducto(@PathVariable Long id) {
+        try {
+            productoService.eliminarProducto(id);
+            return ResponseEntity.ok("Producto eliminado correctamente");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
-
-
-
-
-
-
-
-
-
 }
