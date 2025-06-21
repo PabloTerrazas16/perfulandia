@@ -3,6 +3,9 @@ package Perfulandia.Duoc.Pedidos.Inventario.Controller;
 import Perfulandia.Duoc.Pedidos.Inventario.Model.Reporte;
 import Perfulandia.Duoc.Pedidos.Inventario.Service.ReporteService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +21,11 @@ public class ReporteController {
     private ReporteService reporteService;
 
     @GetMapping
+    @Operation(summary = "Obtener todos los reportes", description = "Obtiene una lista de todos los reportes")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Operación exitosa"),
+            @ApiResponse(responseCode = "404", description = "Pedido no encontrado")
+    })
     public ResponseEntity<List<Reporte>> listarReportes() {
         List<Reporte> reportes = reporteService.listarReportes();
         if (reportes.isEmpty()) {
@@ -27,6 +35,11 @@ public class ReporteController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Obtener todos los reportes por ID", description = "Obtiene un solo reporte por su ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Operación exitosa"),
+            @ApiResponse(responseCode = "404", description = "Pedido no encontrado")
+    })
     public ResponseEntity<?> obtenerReportePorId(@PathVariable Long id) {
         Reporte reporte = reporteService.obtenerReportePorId(id);
         if (reporte == null) {
