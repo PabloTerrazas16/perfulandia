@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ProductoModelAssembler implements RepresentationModelAssembler<Producto, EntityModel<Producto>> {
 
+
     @Override
     public EntityModel<Producto> toModel(Producto producto) {
         return EntityModel.of(producto,
