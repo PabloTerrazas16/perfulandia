@@ -52,6 +52,7 @@ public class ProductoControllerV2 {
                 linkTo(methodOn(ProductoControllerV2.class).buscarPorNombre(nombre)).withSelfRel()));
     }
 
+
     @PostMapping
     public ResponseEntity<EntityModel<Producto>> crearProducto(@RequestBody Producto producto) {
         if (producto.getNombre() == null || producto.getNombre().trim().isEmpty()
