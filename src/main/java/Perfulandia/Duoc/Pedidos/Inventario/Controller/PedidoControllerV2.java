@@ -3,6 +3,7 @@ package Perfulandia.Duoc.Pedidos.Inventario.Controller;
 import Perfulandia.Duoc.Pedidos.Inventario.Assembler.PedidoModelAssembler;
 import Perfulandia.Duoc.Pedidos.Inventario.Model.Pedido;
 import Perfulandia.Duoc.Pedidos.Inventario.Service.PedidoService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.CollectionModel;
@@ -17,6 +18,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @RestController
 @RequestMapping("/api/v2/pedidos")
+@Tag(name= "PedidosV2",description = "Controller con respuestas Hateoas")
 public class PedidoControllerV2 {
 
     @Autowired

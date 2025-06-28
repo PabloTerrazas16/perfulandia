@@ -77,4 +77,6 @@ public class PedidoController {
         pedidoService.eliminarPedido(id);
         return ResponseEntity.ok().build();
     }
+
+
 }

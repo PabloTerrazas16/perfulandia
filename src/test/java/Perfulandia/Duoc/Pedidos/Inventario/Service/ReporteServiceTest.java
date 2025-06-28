@@ -60,7 +60,7 @@ public class ReporteServiceTest {
         // Configura el comportamiento del mock: cuando se llame a save(), devuelve el objeto Reporte proporcionado.
         when(reporteRepository.save(reporte)).thenReturn(reporte);
 
-        // Llama al método guardarReporte() del servicio.
+        // Llama al metodo guardarReporte() del servicio.
         Reporte saved = reporteService.guardarReporte(reporte);
 
         // Verifica que el Reporte guardado no sea nulo y que su nombre coincida con el nombre esperado.
